@@ -148,7 +148,8 @@ spec:
     spec:
       containers:
         - name: operator
-          image: monime/istio-virtualservice-merger:latest
+          image: dlemfh/istio-virtualservice-merger:downstream-main
+          imagePullPolicy: Always
           ports:
             - name: http
               containerPort: 8080

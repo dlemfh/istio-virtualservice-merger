@@ -36,7 +36,7 @@ IMAGE_TAG_BASE ?= monime.sl/istio-virtualservice-merger
 BUNDLE_IMG ?= $(IMAGE_TAG_BASE)-bundle:v$(VERSION)
 
 # Image URL to use all building/pushing image targets
-IMG ?= controller:latest
+IMG ?= dlemfh/istio-virtualservice-merger:latest
 # Produce CRDs that work back to Kubernetes 1.11 (no version conversion)
 CRD_OPTIONS ?= "crd:trivialVersions=true,preserveUnknownFields=false,allowDangerousTypes=true"
 
@@ -104,6 +104,9 @@ docker-build: test ## Build docker image with the manager.
 
 docker-push: ## Push docker image with the manager.
 	docker push ${IMG}
+
+docker-build-push: ## Build and push docker image with the manager.
+	docker buildx build --platform linux/amd64 -t ${IMG} .
 
 ##@ Deployment
 
@@ -227,8 +230,8 @@ generate-mocks:
 	mockgen -package mocks  sigs.k8s.io/controller-runtime/pkg/client Client  > tests/mocks/mock_client.go &&\
 	mockgen -package mocks  github.com/go-logr/logr Logger  > tests/mocks/mock_logger.go &&\
 	mockgen -package mocks  github.com/monimesl/operator-helper/reconciler Context  > tests/mocks/mock_reconciler_context.go &&\
-	mockgen -package mocks  istio.io/client-go/pkg/clientset/versioned Interface  > tests/mocks/mock_clientset.go 
-	
+	mockgen -package mocks  istio.io/client-go/pkg/clientset/versioned Interface  > tests/mocks/mock_clientset.go
+
 clean:
 	rm -rf bin/
 	rm -rf config/crd/bases
