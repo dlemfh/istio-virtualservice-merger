@@ -14,7 +14,7 @@
 # limitations under the License.
 
 # Build the operator binary
-FROM golang:1.18  as builder 
+FROM --platform=$BUILDPLATFORM golang:1.18 AS builder
 
 WORKDIR /workspace
 # Copy the Go Modules manifests
@@ -38,7 +38,8 @@ COPY controller/reconciler.go controller/reconciler.go
 RUN make generate
 
 # Build
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 GO111MODULE=on go build -a -o operator main.go
+ARG TARGETOS TARGETARCH
+RUN CGO_ENABLED=0 GOOS=${TARGETOS:-linux} GOARCH=${TARGETARCH:-amd64} GO111MODULE=on go build -a -o operator main.go
 
 # Use distroless as minimal base image to package the operator binary
 # Refer to https://github.com/GoogleContainerTools/distroless for more details
